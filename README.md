@@ -51,7 +51,12 @@ After login is complete in the codegen browser, close it. Then upload that JSON 
 
 ## Profile Files
 
-Profiles live in `profiles/*.yaml`. A sample profile is included at `profiles/example_duolingo.yaml`.
+Profiles live in `profiles/*.yaml`.
+
+Included samples:
+
+- `profiles/example_duolingo.yaml` for `url_template` flows (`.../redeem?code={code}`)
+- `profiles/example_form_site.yaml` for `form` flows (fill input + click submit)
 
 Core keys:
 
@@ -60,6 +65,18 @@ Core keys:
 - `http.success` / `http.failure` / `http.blocked`
 - `browser.success_text_any` / `browser.failure_text_any` / `browser.blocked_text_any`
 - `browser.storage_state_path`
+
+### Form Profile Quick Checklist
+
+For sites that need form interaction, configure these first:
+
+1. `form.url` with the redeem page URL.
+2. `form.code_selector` with the input selector for the code field.
+3. `form.submit_selector` with the redeem button selector.
+4. `browser.result_selector` (optional but recommended) where result text appears.
+5. `browser.success_text_any` and `browser.failure_text_any` with exact phrases from the site.
+
+Tip: use browser DevTools inspect to verify selectors before running a large batch.
 
 ## API Endpoints (used by UI)
 
@@ -76,6 +93,11 @@ Core keys:
 ## Deploy on Ubuntu VPS
 
 See `docs/DEPLOY_UBUNTU.md` for a full production guide (systemd + Nginx + HTTPS).
+
+For faster copy-paste deployment and troubleshooting:
+
+- `docs/QUICK_NGINX_SETUP.md`
+- `docs/INITIAL_RELEASE_WALKTHROUGH.md`
 
 ## Notes
 

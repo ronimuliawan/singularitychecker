@@ -78,7 +78,7 @@ cp .env.example .env
 Edit `.env`:
 
 ```ini
-APP_NAME=Redeem Checker
+APP_NAME="Redeem Checker"
 SECRET_KEY=use-a-long-random-secret
 
 ADMIN_USERNAME=admin
@@ -95,6 +95,11 @@ DEFAULT_BROWSER_CONCURRENCY=1
 DEFAULT_MAX_RETRIES=2
 DEFAULT_REQUEST_DELAY_MS=100
 ```
+
+Notes:
+
+- Quote values that contain spaces (like `APP_NAME`).
+- Keep `ADMIN_PASSWORD` at 72 bytes or fewer for bcrypt compatibility.
 
 Generate a secure secret quickly:
 
@@ -122,7 +127,7 @@ Open `http://SERVER_IP:8000` temporarily (or via SSH tunnel) and confirm:
 
 - Login page appears
 - You can sign in using `ADMIN_USERNAME` / `ADMIN_PASSWORD`
-- `profiles/example_duolingo.yaml` is visible in profile dropdown
+- `profiles/example_duolingo.yaml` and `profiles/example_form_site.yaml` are visible in profile dropdown
 
 Stop with `Ctrl+C`.
 
@@ -262,6 +267,8 @@ source .venv/bin/activate
 python -m playwright codegen --save-storage=sessions/duolingo.json https://www.duolingo.com
 ```
 
+For form-mode sites, run the same command against that site's redeem page and save to the path used in `browser.storage_state_path`.
+
 ---
 
 ## 11) Updates and Maintenance
@@ -300,6 +307,20 @@ tar czf backup_$(date +%F_%H%M%S).tar.gz data profiles sessions .env
 - Check logs: `sudo journalctl -u redeem-checker -n 200 --no-pager`
 - Validate env file path and permissions
 - Ensure `requirements.txt` installed in `.venv`
+
+### `.env` loads with `command not found`
+
+- Usually caused by unquoted values with spaces, e.g. `APP_NAME=Redeem Checker`
+- Fix by quoting: `APP_NAME="Redeem Checker"`
+
+### Missing `itsdangerous` module
+
+- Reinstall dependencies in the active venv: `pip install -r requirements.txt`
+
+### bcrypt/passlib startup issues
+
+- Ensure dependencies match `requirements.txt` (includes a compatible bcrypt pin)
+- Reinstall dependencies in the active venv: `pip install -r requirements.txt`
 
 ### Browser fallback always fails
 

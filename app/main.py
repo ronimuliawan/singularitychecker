@@ -27,6 +27,9 @@ templates = Jinja2Templates(directory=str(settings.templates_dir))
 async def lifespan(app: FastAPI) -> Any:
     settings.ensure_directories()
 
+    if len(settings.admin_password.encode("utf-8")) > 72:
+        raise RuntimeError("ADMIN_PASSWORD must be 72 bytes or fewer for bcrypt")
+
     db = Database(settings.database_path)
     await db.connect()
     await repository.initialize_schema(db)

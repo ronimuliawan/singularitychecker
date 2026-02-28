@@ -1,0 +1,54 @@
+name: example_form_site
+description: Example form-submit profile for redeem pages that require typing and clicking.
+mode: form
+
+form:
+  url: "https://example.com/redeem"
+  code_selector: "input[name='redeem_code']"
+  submit_selector: "button[type='submit']"
+  wait_for_selector: ".redeem-result"
+
+http:
+  enabled: false
+  method: POST
+  post_url: "https://example.com/redeem"
+  code_field: "redeem_code"
+  timeout_seconds: 20
+  success:
+    body_contains_any:
+      - "redeem successful"
+      - "code applied"
+      - "subscription activated"
+  failure:
+    body_contains_any:
+      - "invalid code"
+      - "already used"
+      - "expired"
+      - "not eligible"
+  blocked:
+    status_codes: [403, 429, 503]
+    body_contains_any:
+      - "captcha"
+      - "verify you are human"
+
+browser:
+  enabled: true
+  headless: true
+  login_required: true
+  timeout_ms: 45000
+  wait_after_submit_ms: 2500
+  storage_state_path: "sessions/example_form_site.json"
+  result_selector: ".redeem-result"
+  success_text_any:
+    - "redeem successful"
+    - "code applied"
+    - "subscription activated"
+  failure_text_any:
+    - "invalid code"
+    - "already used"
+    - "expired"
+    - "not eligible"
+  blocked_text_any:
+    - "captcha"
+    - "verify you are human"
+    - "security check"
