@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ app_name }}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>{{ app_name }}</h1>
+      <p class="muted">Bulk redeem-code checker with HTTP + browser fallback</p>
+    </div>
+    <div class="topbar-actions">
+      <span class="muted">Signed in as <strong>{{ user }}</strong></span>
+      <a href="/logout" class="button-link">Logout</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Create Job</h2>
+      <form id="job-form" class="stack" enctype="multipart/form-data">
+        <label>
+          Site profile
+          <select id="profile_name" name="profile_name" required></select>
+        </label>
+
+        <label>
+          Redeem URL override (optional)
+          <input
+            type="text"
+            id="redeem_url_override"
+            name="redeem_url_override"
+            placeholder="https://example.com/redeem?code={code}">
+        </label>
+
+        <label>
+          Paste redeem codes
+          <textarea
+            id="pasted_codes"
+            name="pasted_codes"
+            rows="7"
+            placeholder="One code per line, or comma-separated"></textarea>
+        </label>
+
+        <label>
+          Upload code files (.txt, .csv)
+          <input id="code_files" name="code_files" type="file" multiple accept=".txt,.csv,text/plain,text/csv">
+        </label>
+
+        <div class="grid-4">
+          <label>
+            HTTP concurrency
+            <input type="number" id="http_concurrency" name="http_concurrency" min="1" max="200" required>
+          </label>
+          <label>
+            Browser concurrency
+            <input type="number" id="browser_concurrency" name="browser_concurrency" min="0" max="20" required>
+          </label>
+          <label>
+            Max retries
+            <input type="number" id="max_retries" name="max_retries" min="0" max="10" required>
+          </label>
+          <label>
+            Delay per request (ms)
+            <input type="number" id="request_delay_ms" name="request_delay_ms" min="0" max="5000" required>
+          </label>
+        </div>
+
+        <div class="actions-row">
+          <button type="submit">Start Job</button>
+          <button type="button" id="reload-profiles">Reload Profiles</button>
+        </div>
+      </form>
+      <p id="job-message" class="muted"></p>
+    </section>
+
+    <section class="card">
+      <h2>Upload Logged-In Session</h2>
+      <form id="session-form" class="stack" enctype="multipart/form-data">
+        <label>
+          Profile
+          <select id="session_profile_name" name="profile_name" required></select>
+        </label>
+        <label>
+          Playwright storage state JSON
+          <input id="session_file" name="session_file" type="file" accept=".json,application/json" required>
+        </label>
+        <button type="submit">Upload Session</button>
+      </form>
+      <p id="session-message" class="muted"></p>
+    </section>
+
+    <section class="card">
+      <h2>Current Job</h2>
+      <p id="job-id" class="mono muted">No job selected</p>
+      <div class="progress-wrap">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <div id="counts" class="counts"></div>
+
+      <div class="actions-row">
+        <button type="button" id="refresh-job">Refresh</button>
+        <button type="button" id="rerun-uncertain">Recheck Unknown/Blocked/Error</button>
+        <a id="download-csv" class="button-link" href="#" hidden>Download CSV</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Recent Jobs</h2>
+      <ul id="job-list" class="job-list"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Latest Results</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Status</th>
+              <th>Source</th>
+              <th>Reason</th>
+              <th>Attempts</th>
+              <th>Checked At</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    window.APP_DEFAULTS = {{ defaults_json | safe }};
+  </script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+name: duolingo
+description: Example URL-template profile for Duolingo-style redemption pages.
+mode: url_template
+url_template: "https://www.duolingo.com/redeem?code={code}"
+
+http:
+  enabled: true
+  method: GET
+  timeout_seconds: 20
+  headers:
+    Accept-Language: en-US,en;q=0.9
+  success:
+    body_contains_any:
+      - "success"
+      - "plan activated"
+      - "redeemed"
+  failure:
+    body_contains_any:
+      - "invalid code"
+      - "already redeemed"
+      - "expired"
+      - "not eligible"
+  blocked:
+    status_codes: [403, 429, 503]
+    body_contains_any:
+      - "captcha"
+      - "verify you are human"
+      - "security check"
+
+browser:
+  enabled: true
+  headless: true
+  login_required: true
+  timeout_ms: 45000
+  wait_after_submit_ms: 2500
+  storage_state_path: "sessions/duolingo.json"
+  success_text_any:
+    - "success"
+    - "plan activated"
+    - "redeemed"
+  failure_text_any:
+    - "invalid code"
+    - "already redeemed"
+    - "expired"
+    - "not eligible"
+  blocked_text_any:
+    - "captcha"
+    - "verify you are human"
+    - "attention required"

@@ -1,0 +1,1 @@
+"""Redeem checker application package."""
